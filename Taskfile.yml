@@ -13,3 +13,11 @@ tasks:
   hook:validate-go-changes:
     cmds:
       - task: test:unit
+
+  run-ticker-example:
+    cmds:
+      - go run ./examples/ticker_job
+
+  run-custom-example:
+    cmds:
+      - go run ./examples/custom_job
