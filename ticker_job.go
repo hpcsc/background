@@ -8,18 +8,18 @@ import (
 
 var _ Job = (*tickerJob)(nil)
 
-func NewTickerJob(name string, tickerDuration time.Duration, runMain func(ctx context.Context, logger *slog.Logger)) Job {
+func NewTickerJob(name string, tickerDuration time.Duration, doWork Work) Job {
 	return &tickerJob{
 		name:           name,
 		tickerDuration: tickerDuration,
-		runMain:        runMain,
+		doWork:         doWork,
 	}
 }
 
 type tickerJob struct {
 	name           string
 	tickerDuration time.Duration
-	runMain        func(ctx context.Context, logger *slog.Logger)
+	doWork         Work
 }
 
 func (j *tickerJob) Name() string {
@@ -39,7 +39,9 @@ func (j *tickerJob) Run(ctx context.Context, logger *slog.Logger) {
 
 			return
 		default:
-			j.runMain(ctx, logger)
+			if err := j.doWork(ctx, logger); err != nil {
+				logger.Error(err.Error())
+			}
 		}
 	}
 }

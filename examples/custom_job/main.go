@@ -48,8 +48,9 @@ func main() {
 	runner := background.NewRunner(context.Background(), logger)
 
 	runner.Run(&httpServerJob{})
-	runner.Run(background.NewTickerJob("ticker-job", 5*time.Second, func(_ context.Context, l *slog.Logger) {
+	runner.Run(background.NewTickerJob("ticker-job", 5*time.Second, func(_ context.Context, l *slog.Logger) error {
 		l.Info("processing")
+		return nil
 	}))
 
 	runner.Wait()
