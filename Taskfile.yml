@@ -18,6 +18,6 @@ tasks:
     cmds:
       - go run ./examples/ticker_job
 
-  run-custom-example:
+  run-blocking-example:
     cmds:
-      - go run ./examples/custom_job
+      - go run ./examples/blocking_job
