@@ -1,4 +1,4 @@
-package background
+package job
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-var _ Job = (*tickerJob)(nil)
+var _ Interface = (*tickerJob)(nil)
 
-func NewTickerJob(name string, tickerDuration time.Duration, doWork Work) Job {
+func NewTicker(name string, tickerDuration time.Duration, doWork Work) Interface {
 	return &tickerJob{
 		name:           name,
 		tickerDuration: tickerDuration,

@@ -3,6 +3,7 @@ package background
 import (
 	"context"
 	"fmt"
+	"github.com/hpcsc/background/job"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -27,7 +28,7 @@ type Runner struct {
 	ctx    context.Context
 }
 
-func (r *Runner) Run(job Job) {
+func (r *Runner) Run(job job.Interface) {
 	r.wg.Add(1)
 
 	l := r.logger.With("job", job.Name())

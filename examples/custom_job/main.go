@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/hpcsc/background"
+	"github.com/hpcsc/background/job"
 	"log/slog"
 	"net/http"
 	"os"
 	"time"
 )
 
-var _ background.Job = (*httpServerJob)(nil)
+var _ job.Interface = (*httpServerJob)(nil)
 
 type httpServerJob struct{}
 
@@ -48,7 +49,7 @@ func main() {
 	runner := background.NewRunner(context.Background(), logger)
 
 	runner.Run(&httpServerJob{})
-	runner.Run(background.NewTickerJob("ticker-job", 5*time.Second, func(_ context.Context, l *slog.Logger) error {
+	runner.Run(job.NewTicker("ticker-job", 5*time.Second, func(_ context.Context, l *slog.Logger) error {
 		l.Info("processing")
 		return nil
 	}))

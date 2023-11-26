@@ -1,4 +1,4 @@
-package background
+package job
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 type Work = func(ctx context.Context, logger *slog.Logger) error
 
-type Job interface {
+type Interface interface {
 	Name() string
 	Run(ctx context.Context, logger *slog.Logger)
 }
