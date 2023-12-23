@@ -6,27 +6,27 @@ import (
 	"time"
 )
 
-var _ Interface = (*tickerJob)(nil)
+var _ Interface = (*recurringJob)(nil)
 
-func NewTicker(name string, tickerDuration time.Duration, doWork Work) Interface {
-	return &tickerJob{
+func NewRecurring(name string, recurringDuration time.Duration, doWork Work) Interface {
+	return &recurringJob{
 		name:           name,
-		tickerDuration: tickerDuration,
+		tickerDuration: recurringDuration,
 		doWork:         doWork,
 	}
 }
 
-type tickerJob struct {
+type recurringJob struct {
 	name           string
 	tickerDuration time.Duration
 	doWork         Work
 }
 
-func (j *tickerJob) Name() string {
+func (j *recurringJob) Name() string {
 	return j.name
 }
 
-func (j *tickerJob) Run(ctx context.Context, logger *slog.Logger) {
+func (j *recurringJob) Run(ctx context.Context, logger *slog.Logger) {
 	ticker := time.NewTicker(j.tickerDuration)
 
 	// ticker by default only starts ticking after specified period

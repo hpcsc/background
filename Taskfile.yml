@@ -14,9 +14,9 @@ tasks:
     cmds:
       - task: test:unit
 
-  run-ticker-example:
+  run-recurring-example:
     cmds:
-      - go run ./examples/ticker_job
+      - go run ./examples/recurring_job
 
   run-blocking-example:
     cmds:

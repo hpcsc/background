@@ -2,8 +2,8 @@
 
 A tiny library to make it easier to run multiple top-level goroutines in the same application
 
-Running a goroutine with ticker is my most common usage so a [ticker job](ticker_job.go) is provided by default.
-[ticker_job example](examples/ticker_job/main.go) gives following output:
+Running a goroutine with ticker is my most common usage so a [recurring job](job/recurring.go) is provided by default.
+[recurring_job example](examples/recurring_job/main.go) gives following output:
 
 ```
 {"time":"2023-11-15T21:27:00.071747+11:00","level":"INFO","msg":"job started","job":"job-2"}
@@ -20,4 +20,4 @@ Running a goroutine with ticker is my most common usage so a [ticker job](ticker
 {"time":"2023-11-15T21:27:06.072068+11:00","level":"INFO","msg":"exit"}
 ```
 
-[custom_job example](examples/custom_job/main.go) gives an example of a job that doesn't use ticker
+[blocking_job example](examples/blocking_job/main.go) gives an example of a job that runs and blocks (http server)
