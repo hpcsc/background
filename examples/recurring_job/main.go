@@ -18,10 +18,16 @@ func main() {
 		return nil
 	}))
 
-	runner.Run(job.NewRecurring("job-2", 5*time.Second, func(_ context.Context, l *slog.Logger) error {
+	jobWithCleanUpLogic := job.NewRecurring("job-2", 5*time.Second, func(_ context.Context, l *slog.Logger) error {
 		l.Info("processing")
 		return nil
-	}))
+	}).
+		CleanUpWith(func(_ context.Context, l *slog.Logger) error {
+			l.Info("custom clean up logic")
+			return nil
+		}, 30*time.Second)
+
+	runner.Run(jobWithCleanUpLogic)
 
 	runner.Wait()
 

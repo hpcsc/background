@@ -28,7 +28,7 @@ type Runner struct {
 	ctx    context.Context
 }
 
-func (r *Runner) Run(job job.Interface) {
+func (r *Runner) Run(job job.Job) {
 	r.wg.Add(1)
 
 	l := r.logger.With("job", job.Name())

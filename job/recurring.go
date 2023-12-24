@@ -6,13 +6,14 @@ import (
 	"time"
 )
 
-var _ Interface = (*recurringJob)(nil)
+var _ JobWithCleanUp = (*recurringJob)(nil)
 
-func NewRecurring(name string, recurringDuration time.Duration, doWork Work) Interface {
+func NewRecurring(name string, recurringDuration time.Duration, doWork Work) JobWithCleanUp {
 	return &recurringJob{
 		name:           name,
 		tickerDuration: recurringDuration,
 		doWork:         doWork,
+		cleanUp:        noopCleanUp,
 	}
 }
 
@@ -20,6 +21,7 @@ type recurringJob struct {
 	name           string
 	tickerDuration time.Duration
 	doWork         Work
+	cleanUp        cleanUp
 }
 
 func (j *recurringJob) Name() string {
@@ -37,6 +39,10 @@ func (j *recurringJob) Run(ctx context.Context, logger *slog.Logger) {
 			ticker.Stop()
 			logger.Info("ticker stopped")
 
+			if err := j.cleanUp.run(ctx, logger); err != nil {
+				logger.Error(err.Error())
+			}
+
 			return
 		default:
 			if err := j.doWork(ctx, logger); err != nil {
@@ -44,4 +50,12 @@ func (j *recurringJob) Run(ctx context.Context, logger *slog.Logger) {
 			}
 		}
 	}
+}
+
+func (j *recurringJob) CleanUpWith(work Work, timeout time.Duration) Job {
+	j.cleanUp = cleanUp{
+		work:           work,
+		cleanUpTimeout: timeout,
+	}
+	return j
 }

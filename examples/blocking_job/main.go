@@ -48,7 +48,7 @@ func main() {
 		logger.Info("http server stopped")
 		return nil
 	}
-	runner.Run(job.NewBlocking("http-server", run, cleanUp))
+	runner.Run(job.NewBlocking("http-server", run).CleanUpWith(cleanUp, 30*time.Second))
 
 	runner.Wait()
 
