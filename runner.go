@@ -3,12 +3,13 @@ package background
 import (
 	"context"
 	"fmt"
-	"github.com/hpcsc/background/job"
 	"log/slog"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/hpcsc/background/job"
 )
 
 func NewRunner(parentCtx context.Context, logger *slog.Logger) *Runner {

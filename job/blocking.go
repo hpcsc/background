@@ -2,25 +2,29 @@ package job
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"time"
 )
 
-var _ JobWithCleanUp = (*blockingJob)(nil)
-
-func NewBlocking(name string, runAndBlock Work) JobWithCleanUp {
+func WithBlockingWork(name string, work Work) Job {
 	return &blockingJob{
-		name:        name,
-		runAndBlock: runAndBlock,
-		cleanUp:     noopCleanUp,
+		name: name,
+		work: work,
 	}
 }
 
+func WithBlockingFunc(name string, workFunc func(logger *slog.Logger)) Job {
+	return &blockingJob{
+		name: name,
+		work: &functionalWork{workFunc: workFunc},
+	}
+}
+
+var _ Job = (*blockingJob)(nil)
+
 type blockingJob struct {
-	name        string
-	runAndBlock Work
-	cleanUp     cleanUp
+	name string
+	work Work
+	workCleanUpRunner
 }
 
 func (j *blockingJob) Name() string {
@@ -28,35 +32,11 @@ func (j *blockingJob) Name() string {
 }
 
 func (j *blockingJob) Run(ctx context.Context, logger *slog.Logger) {
-	// `ctx` is used to communicate whether the application is canceled due to signals
-	// create a new context `runCtx` for clean up goroutine to communicate with this goroutine
-	runCtx, cancelRunCtx := context.WithCancel(context.Background())
-
 	go func() {
-		// wait for shutdown signal
-		<-ctx.Done()
-
-		if err := j.cleanUp.run(ctx, logger); err != nil {
-			logger.Error(err.Error())
-			return
-		}
-
-		// clean up done, notify run context that it's done
-		cancelRunCtx()
+		j.work.Run(logger)
 	}()
 
-	if err := j.runAndBlock(ctx, logger); err != nil {
-		logger.Error(fmt.Sprintf("failed to run: %v", err))
-	}
+	<-ctx.Done()
 
-	// wait for run context to be stopped
-	<-runCtx.Done()
-}
-
-func (j *blockingJob) CleanUpWith(work Work, timeout time.Duration) Job {
-	j.cleanUp = cleanUp{
-		work:           work,
-		cleanUpTimeout: timeout,
-	}
-	return j
+	j.workCleanUpRunner.run(j.work, logger)
 }
